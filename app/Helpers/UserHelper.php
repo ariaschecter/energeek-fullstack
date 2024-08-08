@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Constant\StatusCodeConstant;
 use App\Http\Resources\Task\TaskCollection;
 use App\Http\Resources\User\UserCollection;
 use App\Http\Resources\User\UserResource;
@@ -23,8 +24,9 @@ class UserHelper
             ];
         } catch (Throwable $th) {
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -32,16 +34,25 @@ class UserHelper
     public function showData($id)
     {
         try {
-            $users = User::findOrFail($id);
+            $user = User::find($id);
+
+            if (!$user) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             return [
                 "status" => true,
-                "data"   => new UserResource($users),
+                "data"   => new UserResource($user),
             ];
         } catch (Throwable $th) {
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -59,8 +70,9 @@ class UserHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -68,7 +80,15 @@ class UserHelper
     {
         try {
             DB::beginTransaction();
-            $user = User::findOrFail($id);
+            $user = User::find($id);
+
+            if (!$user) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             $user->update($payload);
 
@@ -80,8 +100,9 @@ class UserHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -90,7 +111,16 @@ class UserHelper
     {
         try {
             DB::beginTransaction();
-            $user = User::findOrFail($id);
+            $user = User::find($id);
+
+            if (!$user) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
+
             $user = $user->delete();
             DB::commit();
             return [
@@ -100,8 +130,9 @@ class UserHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }

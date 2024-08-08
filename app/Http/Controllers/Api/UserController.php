@@ -54,7 +54,7 @@ class UserController extends Controller
         $response = $this->userHelper->showData($id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -73,7 +73,7 @@ class UserController extends Controller
         $response = $this->userHelper->updateData($validated, $id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -86,7 +86,7 @@ class UserController extends Controller
         $response = $this->userHelper->deleteData($id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
