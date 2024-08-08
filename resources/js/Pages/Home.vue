@@ -31,9 +31,11 @@ const storeData = async () => {
         tasks: todoListDatas.value,
     };
 
-    const checkIsFilled = checkIsDescriptionFilled(payload.tasks);
+    const checkIsEmpty = checkIsDescriptionEmpty(payload.tasks);
 
-    if (!checkIsFilled) {
+    console.log(checkIsEmpty);
+
+    if (checkIsEmpty) {
         return toast.error("Isi deskripsi todo list terlebih dahulu");
     }
 
@@ -57,23 +59,21 @@ const storeData = async () => {
         });
 };
 
-const checkIsDescriptionFilled = (todoLists) => {
-    const lastIndex = todoLists.length - 1;
-
-    // Cek apakah deskripsi todo list sebelumnya masih kosong
-    return todoLists[lastIndex].description === "" ? false : true;
+const checkIsDescriptionEmpty = (todoLists) => {
+    // Cek apakah deskripsi todo list masih kosong
+    return todoLists.some((item) => item.description === "");
 };
 
 const addTodo = () => {
-    const checkLastTodoFilled = checkIsDescriptionFilled(todoListDatas.value);
+    const checkIsEmpty = checkIsDescriptionEmpty(todoListDatas.value);
 
-    if (checkLastTodoFilled) {
+    if (!checkIsEmpty) {
         todoListDatas.value.push({
             description: "",
             category_id: props.categories[0]?.id,
         });
     } else {
-        return toast.error("Isi deskripsi todo list terakhir terlebih dahulu");
+        return toast.error("Isi deskripsi todo list terlebih dahulu");
     }
 };
 const removeTodo = (index) => {
@@ -173,51 +173,67 @@ const removeTodo = (index) => {
                 </button>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-7">
                 <div
                     v-for="(todo, index) in todoListDatas"
-                    class="flex items-center space-x-4"
+                    class="flex flex-cols items-center space-x-4"
                 >
-                    <input
-                        type="text"
-                        name="description"
-                        v-model="todo.description"
-                        class="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                        placeholder="Contoh: Perbaikan api master"
-                    />
-                    <select
-                        class="border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                        v-model="todo.category_id"
-                    >
-                        <option
-                            v-for="category in categories"
-                            :value="category?.id"
+                    <div class="w-[85%]">
+                        <label
+                            for="name"
+                            class="block text-sm font-medium text-gray-700"
+                            >Nama</label
                         >
-                            {{ category.name }}
-                        </option>
-                    </select>
-                    <button
-                        class="text-white bg-[#F1416C] p-1 rounded-lg cursor-pointer"
-                        @click="removeTodo(index)"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
+                        <input
+                            type="text"
+                            name="description"
+                            v-model="todo.description"
+                            class="flex-1 w-full border-gray-300 rounded-md shadow-sm mt-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                            placeholder="Contoh: Perbaikan api master"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            for="name"
+                            class="block text-sm font-medium text-gray-700"
+                            >Kategori</label
                         >
-                            <path
-                                fill="currentColor"
-                                d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
-                            />
-                        </svg>
-                    </button>
+                        <select
+                            class="border-gray-300 rounded-md shadow-sm mt-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+                            v-model="todo.category_id"
+                        >
+                            <option
+                                v-for="category in categories"
+                                :value="category?.id"
+                            >
+                                {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <button
+                            class="mt-8 text-white bg-[#F1416C] p-1 rounded-lg cursor-pointer"
+                            @click="removeTodo(index)"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    fill="currentColor"
+                                    d="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <div class="mt-4">
                 <button
-                    class="w-full bg-[#049C4F] text-white font-semibold py-1 rounded-lg shadow hover:bg-green-600"
+                    class="w-full bg-[#049C4F] text-white font-semibold py-2 rounded-lg shadow hover:bg-green-600"
                     @click="storeData"
                 >
                     SIMPAN
