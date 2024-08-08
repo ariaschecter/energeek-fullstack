@@ -32,7 +32,6 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
@@ -43,8 +42,16 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password'          => 'hashed',
     ];
+
+    public static function createUser(array $payload)
+    {
+        return User::create([
+            'name'     => $payload['name'],
+            'username' => $payload['username'],
+            'email'    => $payload['email'],
+        ]);
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

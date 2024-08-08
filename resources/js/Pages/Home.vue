@@ -3,7 +3,10 @@ import { Head, Link } from "@inertiajs/vue3";
 import Logo from "@/assets/energeek-logo.png";
 import { ref } from "vue";
 import { createTask } from "@/service/tasks";
+
 import Swal from "sweetalert2";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 
 const props = defineProps({
     categories: [Array, Object],
@@ -28,6 +31,12 @@ const storeData = async () => {
         tasks: todoListDatas.value,
     };
 
+    const checkIsFilled = checkIsDescriptionFilled(payload.tasks);
+
+    if (!checkIsFilled) {
+        return toast.error("Isi deskripsi todo list terlebih dahulu");
+    }
+
     await createTask(payload)
         .then((res) => {
             const data = res.data;
@@ -39,21 +48,40 @@ const storeData = async () => {
         })
         .catch((err) => {
             const response = err.response;
+            console.log(response?.data.errors);
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
-                text: response?.data.message,
+                text: response?.data.errors.map((error) => error[0]).join(" "),
             });
         });
 };
+
+const checkIsDescriptionFilled = (todoLists) => {
+    const lastIndex = todoLists.length - 1;
+
+    // Cek apakah deskripsi todo list sebelumnya masih kosong
+    return todoLists[lastIndex].description === "" ? false : true;
+};
+
 const addTodo = () => {
-    todoListDatas.value.push({
-        description: "",
-        category_id: props.categories[0]?.id,
-    });
+    const checkLastTodoFilled = checkIsDescriptionFilled(todoListDatas.value);
+
+    if (checkLastTodoFilled) {
+        todoListDatas.value.push({
+            description: "",
+            category_id: props.categories[0]?.id,
+        });
+    } else {
+        return toast.error("Isi deskripsi todo list terakhir terlebih dahulu");
+    }
 };
 const removeTodo = (index) => {
-    todoListDatas.value.splice(index, 1);
+    if (todoListDatas.value.length > 1) {
+        todoListDatas.value.splice(index, 1);
+    } else {
+        return toast.error("Minimal terdapat 1 todo list");
+    }
 };
 </script>
 
