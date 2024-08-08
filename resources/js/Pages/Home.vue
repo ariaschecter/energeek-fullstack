@@ -2,6 +2,8 @@
 import { Head, Link } from "@inertiajs/vue3";
 import Logo from "@/assets/energeek-logo.png";
 import { ref } from "vue";
+import { createTask } from "@/service/tasks";
+import Swal from "sweetalert2";
 
 const props = defineProps({
     categories: [Array, Object],
@@ -12,18 +14,37 @@ const todoListDatas = ref([
         description: "",
         category_id: props.categories[0]?.id,
     },
-    {
-        description: "",
-        category_id: props.categories[0]?.id,
-    },
-    {
-        description: "",
-        category_id: props.categories[0]?.id,
-    },
 ]);
 
-const printData = () => {
-    console.log(todoListDatas);
+const name = ref(null);
+const username = ref(null);
+const email = ref(null);
+
+const storeData = async () => {
+    const payload = {
+        name: name.value,
+        username: username.value,
+        email: email.value,
+        tasks: todoListDatas.value,
+    };
+
+    await createTask(payload)
+        .then((res) => {
+            const data = res.data;
+            Swal.fire({
+                icon: "success",
+                title: "Berhasil!",
+                text: data.message,
+            });
+        })
+        .catch((err) => {
+            const response = err.response;
+            Swal.fire({
+                icon: "error",
+                title: "Gagal!",
+                text: response?.data.message,
+            });
+        });
 };
 const addTodo = () => {
     todoListDatas.value.push({
@@ -64,6 +85,7 @@ const removeTodo = (index) => {
                         type="text"
                         id="name"
                         name="name"
+                        v-model="name"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
                         placeholder="Nama"
                     />
@@ -78,6 +100,7 @@ const removeTodo = (index) => {
                         type="text"
                         id="username"
                         name="username"
+                        v-model="username"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
                         placeholder="Username"
                     />
@@ -92,6 +115,7 @@ const removeTodo = (index) => {
                         type="email"
                         id="email"
                         name="email"
+                        v-model="email"
                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm"
                         placeholder="Email"
                     />
@@ -166,7 +190,7 @@ const removeTodo = (index) => {
             <div class="mt-4">
                 <button
                     class="w-full bg-[#049C4F] text-white font-semibold py-1 rounded-lg shadow hover:bg-green-600"
-                    @click="printData"
+                    @click="storeData"
                 >
                     SIMPAN
                 </button>

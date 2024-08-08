@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
+    Route::prefix('tasks')->group(function () {
+        Route::post('/', [TaskController::class, 'store']);
+    });
+
+
     Route::post('auth/login', [AuthController::class, 'login']);
 });
