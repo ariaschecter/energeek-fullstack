@@ -46,7 +46,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/{id}', [CategoryController::class, 'destroy']);
     });
 
-    Route::prefix('tasks')->middleware('auth:api')->group(function () {
+    Route::prefix('tasks')->middleware('jwt.api')->group(function () {
         Route::get('/', [TaskController::class, 'index']);
         Route::get('/{id}', [TaskController::class, 'show']);
         Route::post('/', [TaskController::class, 'store']);
