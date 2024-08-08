@@ -2,7 +2,7 @@
 import { Head, Link } from "@inertiajs/vue3";
 import Logo from "@/assets/energeek-logo.png";
 import { ref } from "vue";
-import { createTask } from "@/service/tasks";
+import { createUserAndTask } from "@/service/home";
 
 import Swal from "sweetalert2";
 import { toast } from "vue3-toastify";
@@ -49,7 +49,7 @@ const storeData = async () => {
         return toast.error("Isi deskripsi todo list terlebih dahulu");
     }
 
-    await createTask(payload)
+    await createUserAndTask(payload)
         .then((res) => {
             const data = res.data;
             Swal.fire({

@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class TaskHelper
+class HomeHelper
 {
     public function storeTasks(array $payload)
     {
@@ -26,11 +26,12 @@ class TaskHelper
 
             $tasks = Task::insert($tasks);
 
+            $tasks = Task::where('user_id', $user->id)->get();
             DB::commit();
             return [
                 "status_code" => 201,
                 "status"      => true,
-                "data"        => $tasks,
+                "data"        => new TaskCollection($tasks),
                 "message"     => "Berhasil menambahkan data"
             ];
         } catch (Throwable $th) {

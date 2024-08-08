@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\TaskHelper;
+use App\Helpers\HomeHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskRequest;
 use Illuminate\Http\Request;
 
-class TaskController extends Controller
+class HomeController extends Controller
 {
-    private $taskHelper;
+    private $homeHelper;
     public function __construct()
     {
-        $this->taskHelper = new TaskHelper();
+        $this->homeHelper = new HomeHelper();
     }
     public function store(TaskRequest $request)
     {
@@ -22,7 +22,7 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
-        $response = $this->taskHelper->storeTasks($validated);
+        $response = $this->homeHelper->storeTasks($validated);
 
         if (!$response["status"]) :
             return response()->failed(message: $response["message"], dev: $response["dev"]);

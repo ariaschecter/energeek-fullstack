@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,8 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::prefix('tasks')->group(function () {
-        Route::post('/', [TaskController::class, 'store']);
+    Route::prefix('home')->group(function () {
+        Route::post('/', [HomeController::class, 'store']);
     });
 
 
