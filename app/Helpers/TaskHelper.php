@@ -17,12 +17,12 @@ class TaskHelper
             DB::beginTransaction();
             $tasks = $payload['tasks'];
 
-            $user = User::createUser($payload);
+            $user = User::createUser(name: $payload['name'], username: $payload['username'], email: $payload['email']);
 
             $tasks = collect($tasks)->map(function ($task) use ($user) {
                 $task['user_id'] = $user->id;
                 return $task;
-            })->toArray();
+            })->reject(fn ($task) => !$task['description'])->values()->toArray();
 
             $tasks = Task::insert($tasks);
 

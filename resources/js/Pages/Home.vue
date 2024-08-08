@@ -23,6 +23,18 @@ const name = ref(null);
 const username = ref(null);
 const email = ref(null);
 
+const resetForm = () => {
+    name.value = null;
+    username.value = null;
+    email.value = null;
+    todoListDatas.value = [
+        {
+            description: "",
+            category_id: props.categories[0]?.id,
+        },
+    ];
+};
+
 const storeData = async () => {
     const payload = {
         name: name.value,
@@ -32,8 +44,6 @@ const storeData = async () => {
     };
 
     const checkIsEmpty = checkIsDescriptionEmpty(payload.tasks);
-
-    console.log(checkIsEmpty);
 
     if (checkIsEmpty) {
         return toast.error("Isi deskripsi todo list terlebih dahulu");
@@ -47,10 +57,10 @@ const storeData = async () => {
                 title: "Berhasil!",
                 text: data.message,
             });
+            resetForm();
         })
         .catch((err) => {
             const response = err.response;
-            console.log(response?.data.errors);
             Swal.fire({
                 icon: "error",
                 title: "Gagal!",
