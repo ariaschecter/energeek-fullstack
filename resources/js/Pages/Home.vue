@@ -1,28 +1,41 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
 import Logo from "@/assets/energeek-logo.png";
-import { ref } from "vue";
-import { createUserAndTask } from "@/service/home";
+import { onMounted, reactive, ref } from "vue";
+import { createUserAndTask, getCategories } from "@/service/home";
 
 import Swal from "sweetalert2";
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
-const props = defineProps({
-    categories: [Array, Object],
-});
+defineProps({});
 
-const todoListDatas = ref([
-    {
-        description: "",
-        category_id: props.categories[0]?.id,
-    },
-]);
-
+const categories = ref(null);
+const firstCategory = ref(null);
 const name = ref(null);
 const username = ref(null);
 const email = ref(null);
+const todoListDatas = ref([]);
 
+// Fetch data from API
+const fetchData = async () => {
+    try {
+        const response = await getCategories();
+
+        categories.value = response.data.data;
+
+        firstCategory.value = categories.value[0];
+
+        todoListDatas.value.push({
+            description: "",
+            category_id: firstCategory.value?.id,
+        });
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+};
+
+// reset form to default
 const resetForm = () => {
     name.value = null;
     username.value = null;
@@ -30,11 +43,12 @@ const resetForm = () => {
     todoListDatas.value = [
         {
             description: "",
-            category_id: props.categories[0]?.id,
+            category_id: firstCategory.value?.id,
         },
     ];
 };
 
+// Store data with axios
 const storeData = async () => {
     const payload = {
         name: name.value,
@@ -43,12 +57,14 @@ const storeData = async () => {
         tasks: todoListDatas.value,
     };
 
+    // Cek apakah deskripsi todo list masih kosong
     const checkIsEmpty = checkIsDescriptionEmpty(payload.tasks);
 
     if (checkIsEmpty) {
         return toast.error("Isi deskripsi todo list terlebih dahulu");
     }
 
+    // Store data to API with axios
     await createUserAndTask(payload)
         .then((res) => {
             const data = res.data;
@@ -69,23 +85,26 @@ const storeData = async () => {
         });
 };
 
+// Cek apakah deskripsi todo list masih kosong
 const checkIsDescriptionEmpty = (todoLists) => {
-    // Cek apakah deskripsi todo list masih kosong
     return todoLists.some((item) => item.description === "");
 };
 
+// Menambahkan array todo list baru
 const addTodo = () => {
     const checkIsEmpty = checkIsDescriptionEmpty(todoListDatas.value);
 
     if (!checkIsEmpty) {
         todoListDatas.value.push({
             description: "",
-            category_id: props.categories[0]?.id,
+            category_id: firstCategory.value?.id,
         });
     } else {
         return toast.error("Isi deskripsi todo list terlebih dahulu");
     }
 };
+
+// Menghapus array todo list pada index
 const removeTodo = (index) => {
     if (todoListDatas.value.length > 1) {
         todoListDatas.value.splice(index, 1);
@@ -93,6 +112,11 @@ const removeTodo = (index) => {
         return toast.error("Minimal terdapat 1 todo list");
     }
 };
+
+// Fetch data when the component is mounted
+onMounted(() => {
+    fetchData();
+});
 </script>
 
 <template>
@@ -216,7 +240,7 @@ const removeTodo = (index) => {
                                 v-for="category in categories"
                                 :value="category?.id"
                             >
-                                {{ category.name }}
+                                {{ category?.name }}
                             </option>
                         </select>
                     </div>
