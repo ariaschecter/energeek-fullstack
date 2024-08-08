@@ -36,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
                         $message = "Data berhasil diubah";
                         break;
                     case "POST":
+                        $httpCode = StatusCodeConstant::CREATED_CODE;
                         $message = "Data berhasil ditambahkan";
                         break;
                     case "DELETE":

@@ -19,30 +19,30 @@ trait RecordSignature
             $authData = self::getAuthData();
 
             $model->created_at = $model->created_at ?: date("Y-m-d H:i:s");
-            $model->created_by = $authData ? (isset($authData->id) ? (string) $authData->id : null) : null;
+            $model->created_by = $authData ? (isset($authData->id) ? $authData->id : null) : null;
             $model->updated_at = date("Y-m-d H:i:s");
-            $model->updated_by = $authData ? (isset($authData->id) ? (string) $authData->id : null) : null;
+            $model->updated_by = $authData ? (isset($authData->id) ? $authData->id : null) : null;
         });
 
         static::updating(function ($model) {
             $authData = self::getAuthData();
 
             $model->updated_at = date("Y-m-d H:i:s");
-            $model->updated_by = $authData ? (isset($authData->id) ? (string) $authData->id : null) : null;
+            $model->updated_by = $authData ? (isset($authData->id) ? $authData->id : null) : null;
         });
 
         static::deleting(function ($model) {
             $authData = self::getAuthData();
 
             $model->deleted_at = date("Y-m-d H:i:s");
-            $model->deleted_by = $authData ? (isset($authData->id) ? (string) $authData->id : null) : null;
+            $model->deleted_by = $authData ? (isset($authData->id) ? $authData->id : null) : null;
         });
     }
 
     public static function getAuthData()
     {
         try {
-            $user = (object) JWTAuth::parseToken()->getPayload()->get("user");
+            $user = auth('api')->user();
 
             if ($user == null) :
                 return null;

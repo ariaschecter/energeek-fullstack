@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +15,13 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validated = $request->validate([
-            'email' => 'required|string|email',
-        ]);
+        if (isset($request->validator) && $request->validator->fails()) :
+            return response()->failed(error: $request->validator->errors());
+        endif;
+
+        $validated = $request->validated();
 
 
         $user = User::where('email', $validated['email'])->first(['id', 'name', 'username', 'email']);

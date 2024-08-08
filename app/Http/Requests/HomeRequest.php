@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
-class TaskRequest extends FormRequest
+class HomeRequest extends FormRequest
 {
     public $validator;
 
@@ -13,6 +13,7 @@ class TaskRequest extends FormRequest
     {
         $this->validator = $validator;
     }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -29,8 +30,10 @@ class TaskRequest extends FormRequest
     public function rules() : array
     {
         return [
-            'description' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'name'     => 'required|max:255',
+            'username' => 'required|max:255|unique:users,username',
+            'email'    => 'required|max:255|unique:users,email|email',
+            'tasks'    => 'required|array'
         ];
     }
 }

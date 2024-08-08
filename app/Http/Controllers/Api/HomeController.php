@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\HomeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\TaskRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\HomeRequest;
 
 class HomeController extends Controller
 {
@@ -14,7 +13,7 @@ class HomeController extends Controller
     {
         $this->homeHelper = new HomeHelper();
     }
-    public function store(TaskRequest $request)
+    public function store(HomeRequest $request)
     {
         if (isset($request->validator) && $request->validator->fails()) :
             return response()->failed(error: $request->validator->errors());
@@ -28,6 +27,5 @@ class HomeController extends Controller
             return response()->failed(message: $response["message"], dev: $response["dev"]);
         endif;
         return response()->success(data: $response["data"], message: $response['message'], httpCode: $response['status_code']);
-
     }
 }
