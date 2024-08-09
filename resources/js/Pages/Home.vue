@@ -106,8 +106,27 @@ const addTodo = () => {
 };
 
 // Menghapus array todo list pada index
-const removeTodo = (index) => {
+const removeTodo = async (index) => {
     if (todoListDatas.value.length > 1) {
+        const result = await Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "To do yang dihapus tidak dapat dikembalikan.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, hapus",
+            cancelButtonText: "Batal",
+        });
+
+        if (result.isConfirmed) {
+            // Aksi jika tombol konfirmasi diklik
+            Swal.fire("Dihapus!", "Item telah dihapus.", "success");
+        } else {
+            // Aksi jika tombol batal diklik
+            Swal.fire("Dibatalkan", "Item tidak dihapus.", "info");
+        }
+
         todoListDatas.value.splice(index, 1);
     } else {
         return toast.error("Minimal terdapat 1 todo list");
