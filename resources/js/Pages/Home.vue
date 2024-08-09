@@ -1,6 +1,7 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
 import Logo from "@/assets/energeek-logo.png";
+import Icon from "@/assets/energeek-icon.png";
 import { onMounted, ref } from "vue";
 import { createUserAndTask, getCategories } from "@/service/home";
 
@@ -120,7 +121,10 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Home" />
+    <Head>
+        <title>Home</title>
+        <link rel="icon" type="image/svg+xml" :href="Icon" />
+    </Head>
 
     <div
         class="relative bg-slate-100 sm:flex sm:justify-center sm:items-center selection:bg-red-500 selection:text-white"
