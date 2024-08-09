@@ -18,6 +18,7 @@
 8. Jika terdapat inputan di terminal tulis `yes` kemudian enter
 9. Masukkan perintah `php artisan db:seed` agar DatabaseSeeder dijalankan dan membuat data di database
 10. Masukkan perintah `npm install` untuk menginstall data node_modules
-11. Masukkan perintah `npm run build` or `npm run dev` agar file vuejs dapat dibuka nantinya
-12. Masukkan perintah `php artisan ser` untuk menjalankan server local pada project laravel 
-13. Buka terminal baru dan masukkan perintah `php artisan test` untuk menjalankan test yang ada di folder tests
+11. Masukkan perintah `php artisan jwt:secret` untuk mengisi JWT_SECRET yang ada di file .env
+12. Masukkan perintah `npm run build` or `npm run dev` agar file vuejs dapat dibuka nantinya
+13. Masukkan perintah `php artisan ser` untuk menjalankan server local pada project laravel 
+14. Buka terminal baru dan masukkan perintah `php artisan test` untuk menjalankan test yang ada di folder tests
