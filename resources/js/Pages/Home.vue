@@ -120,14 +120,13 @@ const removeTodo = async (index) => {
         });
 
         if (result.isConfirmed) {
+            todoListDatas.value.splice(index, 1);
             // Aksi jika tombol konfirmasi diklik
             Swal.fire("Dihapus!", "Item telah dihapus.", "success");
         } else {
             // Aksi jika tombol batal diklik
             Swal.fire("Dibatalkan", "Item tidak dihapus.", "info");
         }
-
-        todoListDatas.value.splice(index, 1);
     } else {
         return toast.error("Minimal terdapat 1 todo list");
     }
