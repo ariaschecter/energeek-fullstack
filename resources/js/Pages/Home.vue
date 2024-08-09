@@ -120,7 +120,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Welcome" />
+    <Head title="Home" />
 
     <div
         class="relative bg-slate-100 sm:flex sm:justify-center sm:items-center selection:bg-red-500 selection:text-white"
