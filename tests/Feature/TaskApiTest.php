@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Constant\StatusCodeConstant;
 use App\Models\Category;
 use App\Models\Task;
 use App\Models\User;
@@ -42,6 +43,10 @@ class TaskApiTest extends TestCase
     {
         return Category::factory()->create();
     }
+    private function makeTaskData()
+    {
+        return Task::factory()->create();
+    }
 
     public function test_can_create_task()
     {
@@ -55,7 +60,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(201)
+        $response->assertStatus(StatusCodeConstant::CREATED_CODE)
             ->assertJsonStructure([
                 'status_code',
                 'message',
@@ -78,6 +83,37 @@ class TaskApiTest extends TestCase
         ]);
     }
 
+    public function test_can_get_all_task()
+    {
+        $user = $this->makeUserData();
+        $token = $this->authenticateUser($user);
+
+        Task::factory(3)->create([
+            'user_id'     => $user->id,
+            'description' => 'Test Task',
+        ]);
+
+        $response = $this->getJson("/api/v1/tasks", [
+            'Authorization' => "Bearer $token",
+        ]);
+
+        $response->assertStatus(StatusCodeConstant::SUCCESS_CODE)
+            ->assertJsonStructure([
+                'status_code',
+                'message',
+                'data' => [
+                    [
+                        'id',
+                        'description',
+                        'category_id',
+                        'created_at',
+                        'updated_at',
+                    ]
+                ],
+                'dev'
+            ]);
+    }
+
     public function test_can_get_task()
     {
         $user = $this->makeUserData();
@@ -94,7 +130,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(StatusCodeConstant::SUCCESS_CODE)
             ->assertJsonStructure([
                 'status_code',
                 'message',
@@ -128,7 +164,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(StatusCodeConstant::SUCCESS_CODE)
             ->assertJsonStructure([
                 'status_code',
                 'message',
@@ -165,7 +201,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(StatusCodeConstant::SUCCESS_CODE);
     }
 
     public function test_cannot_create_task_without_description()
@@ -178,7 +214,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(422)  // Expecting validation error status
+        $response->assertStatus(StatusCodeConstant::ERROR_CODE)  // Expecting validation error status
             ->assertJsonStructure([
                 'status_code',
                 'message',
@@ -194,7 +230,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(404)  // Expecting not found status
+        $response->assertStatus(StatusCodeConstant::NOT_FOUND_CODE)  // Expecting not found status
             ->assertJsonStructure([
                 'status_code',
                 'message'
@@ -214,7 +250,7 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(404)  // Expecting not found status
+        $response->assertStatus(StatusCodeConstant::NOT_FOUND_CODE)  // Expecting not found status
             ->assertJsonStructure([
                 'status_code',
                 'message'
@@ -229,7 +265,128 @@ class TaskApiTest extends TestCase
             'Authorization' => "Bearer $token",
         ]);
 
-        $response->assertStatus(404)  // Expecting not found status
+        $response->assertStatus(StatusCodeConstant::NOT_FOUND_CODE)  // Expecting not found status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_create_task_without_authentication()
+    {
+        $category = $this->makeCategoryData();
+
+        $response = $this->postJson('/api/v1/tasks', [
+            'description' => 'Test Task',
+            'category_id' => $category->id,
+        ]);
+
+        $response->assertStatus(StatusCodeConstant::UNAUTHORIZED_CODE)  // Expecting unauthorized status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_get_task_without_authentication()
+    {
+        $task = $this->makeTaskData();
+
+        $response = $this->getJson("/api/v1/tasks/{$task->id}");
+
+        $response->assertStatus(StatusCodeConstant::UNAUTHORIZED_CODE)  // Expecting unauthorized status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_update_task_without_authentication()
+    {
+        $task = $this->makeTaskData();
+        $category = $this->makeCategoryData();
+
+        $response = $this->putJson("/api/v1/tasks/{$task->id}", [
+            'description' => 'Updated Task',
+            'category_id' => $category->id,
+        ]);
+
+        $response->assertStatus(StatusCodeConstant::UNAUTHORIZED_CODE)  // Expecting unauthorized status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_delete_task_without_authentication()
+    {
+        $task = $this->makeTaskData();
+
+        $response = $this->deleteJson("/api/v1/tasks/{$task->id}");
+
+        $response->assertStatus(StatusCodeConstant::UNAUTHORIZED_CODE)  // Expecting unauthorized status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_get_task_owned_by_another_user()
+    {
+        $user = User::factory()->create();
+
+        // Create a task for another user
+        $task = Task::factory()->create();
+
+        // Attempt to get the task with another user's token
+        $response = $this->getJson("/api/v1/tasks/{$task->id}", [
+            'Authorization' => "Bearer " . $this->authenticateUser($user),
+        ]);
+
+        $response->assertStatus(StatusCodeConstant::NOT_FOUND_CODE) // Expecting not found status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_update_task_owned_by_another_user()
+    {
+        $category = $this->makeCategoryData();
+
+        $user = User::factory()->create();
+
+        // Create a task for another user
+        $task = Task::factory()->create();
+
+        // Attempt to update the task with another user's token
+        $response = $this->putJson("/api/v1/tasks/{$task->id}", [
+            'description' => 'Updated Task Description',
+            'category_id' => $category->id, // Assuming this category exists
+        ], [
+            'Authorization' => "Bearer " . $this->authenticateUser($user),
+        ]);
+
+        $response->assertStatus(StatusCodeConstant::NOT_FOUND_CODE) // Expecting not found status
+            ->assertJsonStructure([
+                'status_code',
+                'message'
+            ]);
+    }
+
+    public function test_cannot_delete_task_owned_by_another_user()
+    {
+        $user = User::factory()->create();
+
+        // Create a task for another user
+        $task = Task::factory()->create();
+
+        // Attempt to delete the task with another user's token
+        $response = $this->deleteJson("/api/v1/tasks/{$task->id}", [], [
+            'Authorization' => "Bearer " . $this->authenticateUser($user),
+        ]);
+
+        $response->assertStatus(StatusCodeConstant::NOT_FOUND_CODE) // Expecting not found status
             ->assertJsonStructure([
                 'status_code',
                 'message'

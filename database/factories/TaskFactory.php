@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,10 +16,14 @@ class TaskFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition(): array
+    public function definition() : array
     {
+        $user = User::factory()->create();
+        $category = Category::factory()->create();
         return [
-            //
+            'user_id'     => $user->id,
+            'description' => 'Task',
+            'category_id' => $category->id,
         ];
     }
 }
