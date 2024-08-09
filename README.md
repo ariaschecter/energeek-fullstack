@@ -6,6 +6,7 @@
 1. Laravel 10
 2. PHP v8.2
 3. Composer v2.7.1
+4. Node v20
 
 ## Instalasi
 1. Buka Terminal. (ex: git bash, cmd, dll)
