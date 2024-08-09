@@ -1,7 +1,7 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import Logo from "@/assets/energeek-logo.png";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { createUserAndTask, getCategories } from "@/service/home";
 
 import Swal from "sweetalert2";
