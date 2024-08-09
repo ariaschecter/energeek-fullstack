@@ -23,6 +23,8 @@ class TaskResource extends JsonResource
             'user_id'     => $this->user_id,
             'category'    => new CategoryResource($this->category),
             'user'        => new UserResource($this->user),
+            'created_at'  => $this->created_at,
+            'updated_at'  => $this->updated_at,
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Constant\StatusCodeConstant;
 use App\Http\Resources\Task\TaskCollection;
 use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\User\UserCollection;
@@ -35,7 +36,15 @@ class TaskHelper
     {
         try {
             $user = auth('api')->user();
-            $task = Task::where('user_id', $user->id)->findOrFail($id);
+            $task = Task::where('user_id', $user->id)->find($id);
+
+            if (!$task) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             return [
                 "status" => true,
@@ -43,8 +52,9 @@ class TaskHelper
             ];
         } catch (Throwable $th) {
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -66,8 +76,9 @@ class TaskHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -76,7 +87,15 @@ class TaskHelper
         try {
             DB::beginTransaction();
             $user = auth('api')->user();
-            $task = Task::where('user_id', $user->id)->findOrFail($id);
+            $task = Task::where('user_id', $user->id)->find($id);
+
+            if (!$task) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             $task->update($payload);
 
@@ -88,8 +107,9 @@ class TaskHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -99,7 +119,15 @@ class TaskHelper
         try {
             DB::beginTransaction();
             $user = auth('api')->user();
-            $task = Task::where('user_id', $user->id)->findOrFail($id);
+            $task = Task::where('user_id', $user->id)->find($id);
+
+            if (!$task) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             $task = $task->delete();
 
@@ -111,8 +139,9 @@ class TaskHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }

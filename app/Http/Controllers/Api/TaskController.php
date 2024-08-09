@@ -41,7 +41,7 @@ class TaskController extends Controller
         $response = $this->taskHelper->storeData($validated);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -54,7 +54,7 @@ class TaskController extends Controller
         $response = $this->taskHelper->showData($id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -73,7 +73,7 @@ class TaskController extends Controller
         $response = $this->taskHelper->updateData($validated, $id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -86,7 +86,7 @@ class TaskController extends Controller
         $response = $this->taskHelper->deleteData($id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }

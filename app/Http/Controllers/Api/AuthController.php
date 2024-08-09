@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Constant\StatusCodeConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
@@ -28,8 +29,8 @@ class AuthController extends Controller
 
         if (!$user) {
             return response()->failed(
-                message: 'Unauthorized',
-                httpCode: 401
+                message: 'User not found',
+                httpCode: StatusCodeConstant::NOT_FOUND_CODE
             );
         }
 

@@ -53,7 +53,7 @@ class CategoryController extends Controller
         $response = $this->categoryHelper->showData($id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -72,7 +72,7 @@ class CategoryController extends Controller
         $response = $this->categoryHelper->updateData($validated, $id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }
@@ -85,7 +85,7 @@ class CategoryController extends Controller
         $response = $this->categoryHelper->deleteData($id);
 
         if (!$response["status"]) :
-            return response()->failed(dev: $response["dev"]);
+            return response()->failed(dev: $response["dev"], httpCode: $response['status_code']);
         endif;
         return response()->success(data: $response["data"]);
     }

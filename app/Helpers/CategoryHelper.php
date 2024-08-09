@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Constant\StatusCodeConstant;
 use App\Http\Resources\Category\CategoryCollection;
 use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Task\TaskCollection;
@@ -26,8 +27,9 @@ class CategoryHelper
             ];
         } catch (Throwable $th) {
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -35,16 +37,25 @@ class CategoryHelper
     public function showData($id)
     {
         try {
-            $users = Category::findOrFail($id);
+            $category = Category::find($id);
+
+            if (!$category) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             return [
                 "status" => true,
-                "data"   => new CategoryResource($users),
+                "data"   => new CategoryResource($category),
             ];
         } catch (Throwable $th) {
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -62,8 +73,9 @@ class CategoryHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -71,7 +83,15 @@ class CategoryHelper
     {
         try {
             DB::beginTransaction();
-            $category = Category::findOrFail($id);
+            $category = Category::find($id);
+
+            if (!$category) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
 
             $category->update($payload);
 
@@ -83,8 +103,9 @@ class CategoryHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
@@ -93,7 +114,16 @@ class CategoryHelper
     {
         try {
             DB::beginTransaction();
-            $category = Category::findOrFail($id);
+            $category = Category::find($id);
+
+            if (!$category) {
+                return [
+                    "status"      => false,
+                    "status_code" => StatusCodeConstant::NOT_FOUND_CODE,
+                    "dev"         => null,
+                ];
+            }
+
             $category = $category->delete();
             DB::commit();
             return [
@@ -103,8 +133,9 @@ class CategoryHelper
         } catch (Throwable $th) {
             DB::rollBack();
             return [
-                "status" => false,
-                "dev"    => $th->getMessage(),
+                "status"      => false,
+                "status_code" => StatusCodeConstant::ERROR_CODE,
+                "dev"         => $th->getMessage(),
             ];
         }
     }
